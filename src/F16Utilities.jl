@@ -7,7 +7,7 @@
 # March 22, 2020.
 # --------------------------------------------------------------
 
-using GridInterpolations, LinearAlgebra
+using GridInterpolations
  
 struct GridData
     data::Vector;
