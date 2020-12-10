@@ -1,5 +1,5 @@
 module F16Model
-using FileIO, GridInterpolations, ForwardDiff
+import FileIO, GridInterpolations, ForwardDiff
 
 #include all the files
 include("NonlinearF16Model.jl");
