@@ -1,5 +1,5 @@
 include("F16Utilities.jl")
-using FileIO
+using FileIO, JLD2
 
 global F16AeroData = load("data/F16AeroData.jld2"); # Loads the Aero Tables for F16.
 
