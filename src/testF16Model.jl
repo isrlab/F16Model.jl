@@ -55,3 +55,4 @@ A, B = Linearize(x0,u0);
 # 1. Write trim routine and solve it using nonlinear optimization.
 # 2. Generate sensor models -- output acceleration, dynamic pressure, etc.
 # 3. Disturbance models.
+# 4. Plot aero tables.
