@@ -1,7 +1,4 @@
 include("F16Utilities.jl")
-using FileIO
-
-global F16AeroData = load("data/F16AeroData.jld2"); # Loads the Aero Tables for F16.
 
 # ------------- Code for Table Interpolation ----------------
 
