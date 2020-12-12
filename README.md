@@ -8,7 +8,7 @@ The dynamics and linearization is functional and can be used for control law des
 
 ``` julia
 # Add package using github url: https://github.com/isrlab/F16Model
-# e.g. Pkg.add("https://github.com/isrlab/F16Model);
+# e.g. Pkg.add("https://github.com/isrlab/F16Model");
 
 using F16Model
 
