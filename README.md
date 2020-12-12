@@ -9,6 +9,14 @@ This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem
 
 More features will be added as we continue to develop this package.
 
+## Model Details
+The states of the system are as follows
+
+1. N: North position in ft
+1. E: East position in ft
+1. h: Altitude in ft
+1. $\phi$
+
 ## Installation
 Add package using GitHub url as shown below.
 

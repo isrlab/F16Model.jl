@@ -1,4 +1,4 @@
-# Nonlinear Model of F16Aircraft with NASA Aerotable
+# Nonlinear Model of F16 Aircraft with NASA Aerotable
 using ForwardDiff
 include("AeroTableInterpolation.jl")
 
@@ -46,7 +46,7 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     # Collect the states and control variables
     npos  = x[1];
     epos  = x[2];
-    alt   = x[3];    # altitude 
+    alt   = x[3];   # altitude 
     phi   = x[4];   # Euler angles are in rad. 
     theta = x[5];
     psi   = x[6];
