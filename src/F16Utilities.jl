@@ -48,7 +48,7 @@ function evaluate(G::GridData,X::Vector; checkBounds::Bool=true)::Real
         end
 
         if outsideBound
-            error("evaluate() --> Variable outside _ range.");
+            error("evaluate() --> Variable outside data range.");
         end
     end
     return interpolate(G.grid,G.data,X);

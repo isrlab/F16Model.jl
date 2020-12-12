@@ -9,13 +9,43 @@ This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem
 
 More features will be added as we continue to develop this package.
 
-## Model Details
-The states of the system are as follows
+## Model Details 
+Detailed information is available [here](https://dept.aem.umn.edu/~balas/darpa_sec/software/F16Manual.pdf).
+
+The 12 states of the system are as follows:
 
 1. N: North position in ft
 1. E: East position in ft
-1. h: Altitude in ft
-1. $\phi$
+1. h: Altitude in ft, min: 5000 ft, max: 40000 ft
+1. phi: Roll angle in rad
+1. theta: Pitch angle in rad
+1. psi: Yaw angle in rad
+1. Vt: Magnitude of total velocity in ft/s, min: 300 ft/s, max: 900 ft/s
+1. alpha: Angle of attack in rad, min: -20 deg, max: 45 deg
+1. beta: Side slip angle in rad, min: -30 deg, max: 30 deg
+1. p: Roll rate in rad/s
+1. q: Pitch rate in rad/s
+1. r: Yaw rate in rad/s
+
+The 5 control variables are:
+
+1. T: Thrust in lbs, min: 1000, max: 19000 
+1. dele: Elevator angle in deg, min:-25, max: 25
+1. dail: Aileron angle in deg, min:-21.5, max: 21.5
+1. drud: Rudder angle in deg, min: -30, max: 30
+1. dlef: Leading edge flap in deg, min: 0, max: 25
+
+Actuator models are defined as:
+
+1. T: max |rate|: 10,000 lbs/s 
+1. dele: max |rate|: 60 deg/s
+1. dail: max |rate|: 80 deg/s
+1. drud: max |rate|: 120 deg/s
+1. dlef: max |rate|: 25 deg/s
+
+The nonlinear model of the aircraft does not include actuator dynamics. 
+The actuator dynamics need to be modeled as LTI systems and added to the system.
+For example, for dele the low pass filter 1/(s/60+1) would model the actuator dynamics.
 
 ## Installation
 Add package using GitHub url as shown below.
@@ -34,7 +64,7 @@ using F16Model
 d2r = pi/180;
 npos = 0;
 epos = 0;
-alt = 10000;
+alt = 10000; # should be in between 5000 ft and 100000 ft
 phi = 0;
 theta = 0;
 psi = 0;
@@ -58,16 +88,39 @@ u0 = [T,dele,dail,drud,dlef];
 
 # Evaluate xdot -- inplace implementation -- use this with DifferentialEquations package.
 xdot1 = zeros(12);
-F16Model.Dynamics!(xdot1,x0,u0);
+F16Model.Dynamics!(xdot1,x0,u0); # Does not implement actuator dynamics.
 
-# Evaluate xdot -- returns vector
-xdot2 = F16Model.Dynamics(x0,u0); # Use this for linearization of dynamics, etc.
+# Evaluate xdot -- returns vector. Use this for linearization of dynamics, etc.
+xdot2 = F16Model.Dynamics(x0,u0); #  Does not implement actuator dynamics.
 
 # Linearize about some trim point (x0,u0)
 A, B = F16Model.Linearize(x0,u0);
 ```
 
-## To do:
-1. Trim functions
-2. Aero-table plotting
+## Trim Functions
 
+The aircraft model can be trimmed at the following configurations:
+
+1. **Steady-level Flight:** phi, phidot = 0, thetadot = 0, psidot = 0
+2. **Steady Turning Flight:** phidot = 0, thetadot = 0, psidot = given
+3. **Steady Pull Up:** phi = 0, phidot = 0, psidot = 0, thetadot = given
+4. **Steady Roll:** thetadot = 0, psidot = 0, phidot = given
+
+For all flight conditions: pdot,qdot,udot,Vdot,alphadot, and betadot are all zero. Derivatives of states N and E are ignored in the trim calculations.
+
+```julia
+# Steady-level flight
+
+# Provide initial guess for nonlinear optimization.
+h0 = 10000; # Trim at this altitude
+phi0, theta0,psi0 = 0,0,0;
+Vt0,alpha0,beta0 = 5000,0,0
+p,q,r = 0,0,0
+T0, dele0, dail0, drud0, dlef0 = 5000,0,0,0
+
+x0 = [h0, phi0, theta0, psi0, Vt0, alpha0, beta0, p0, q0, r0];
+u0 = [T0,dele0,dail0,drud0,dlef0];
+
+ix = [1,1,1,1,0,0,0,1,1,1]; # 1 => Trim values are fixed in the optimization, 0 => Trim values are optimization variables.
+xbar,ubar = F16Model.Trim(x0,u0,ix); # Not implemented yet.
+```
