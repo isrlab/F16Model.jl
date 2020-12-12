@@ -1,6 +1,8 @@
 # F16Model
 
-This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynamics included in this model come from the NASA Technical Report 1538, *Simulator Study of Stall/Post-Stall Characteristics of a Fighter Airplane with Relaxed Longitudinal Static Stability*, by Nguyen, Ogburn, Gilbert, Kibler, Brown, and Deal, Dec 1979. The flight dynamics are based on *Aircraft Control and Simulations*, by Brian Stevens and Frank Lewis, Wiley Inter-Science, New York, 1992. This Julia package aims to replicate the MATLAB/Simulink package developed by Prof. Gary J. Balas with his students from the Aerospace Engineering & Mechanics department of the University of Minnesota and his collaborators. 
+This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynamics included in this model come from the NASA Technical Report 1538, *Simulator Study of Stall/Post-Stall Characteristics of a Fighter Airplane with Relaxed Longitudinal Static Stability*, by Nguyen, Ogburn, Gilbert, Kibler, Brown, and Deal, Dec 1979. The flight dynamics are based on *Aircraft Control and Simulations*, by Brian Stevens and Frank Lewis, Wiley Inter-Science, New York, 1992. 
+
+This Julia package is inspired by the MATLAB/Simulink package developed by Prof. Gary J. Balas with his students from the Aerospace Engineering & Mechanics department of the University of Minnesota and his collaborators. 
 
 Currently, the package supports the following features:
 
