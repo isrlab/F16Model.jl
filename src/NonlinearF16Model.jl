@@ -107,7 +107,6 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     thd = Q*cphi - R*sphi; # theta dot
     psid = (Q*sphi + R*cphi)/ct; # psi dot
 
-    # Need to read the aerodynamics table -- All functions need to be coded.
     # Aerodynamic forces and moments
     Cx = AeroCx(alpha,beta,el); 
     Cy = AeroCy(alpha,beta);  
@@ -192,15 +191,6 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     
     # Rdot
     rd = (Jx*N_tot + Jxz*L_tot + (Jx*(Jx-Jy)+Jxz*Jxz)*P*Q - Jxz*(Jx-Jy+Jz)*Q*R +  Jx*Q*Heng)/denom;
-    
-    # Create  separate function for sensor data.
-    # anx_cg, any_cg, anz_cg = accels(x,u,xdot);
-    # xdot[13]  = anx_cg;	
-    # xdot[14]  = any_cg;	
-    # xdot[15]  = anz_cg;	
-    # xdot[16]  = mach;
-    # xdot[17]  = qbar;
-    # xdot[18]  = ps;
 
     xdot[1] = nposd;
     xdot[2] = eposd;
@@ -299,7 +289,6 @@ function Dynamics(x::Vector, u::Vector)::Vector
   thd = Q*cphi - R*sphi; # theta dot
   psid = (Q*sphi + R*cphi)/ct; # psi dot
 
-  # Need to read the aerodynamics table -- All functions need to be coded.
   # Aerodynamic forces and moments
   Cx = AeroCx(alpha,beta,el); 
   Cy = AeroCy(alpha,beta);  
