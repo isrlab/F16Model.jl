@@ -12,7 +12,7 @@ Currently, the package supports the following features:
 More features will be added as we continue to develop this package.
 
 ## Installation
-Add package using github url: https://github.com/isrlab/F16Model, e.g.
+Add package using github url e.g.
 
 ``` julia
 Pkg.add("https://github.com/isrlab/F16Model");
