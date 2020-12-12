@@ -1,7 +1,7 @@
 name = "F16Model"
 uuid = "edccaa42-18b2-46d1-80ce-8508c2c4933c"
 authors = ["Intelligent Systems Research Laboratory <raktim@tamu.edu>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
