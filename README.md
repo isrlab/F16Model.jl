@@ -35,7 +35,7 @@ xdot2 = F16Model.Dynamics(x0,u0); # Use this for linearization of dynamics, etc.
 
 # Linerize about some trim point (x0,u0)
 A, B = F16Model.Linearize(x0,u0);
-'''
+```
 
 ## To do:
 1. Trim functions
