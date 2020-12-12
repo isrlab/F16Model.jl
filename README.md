@@ -55,7 +55,7 @@ F16Model.Dynamics!(xdot1,x0,u0);
 # Evaluate xdot -- returns vector
 xdot2 = F16Model.Dynamics(x0,u0); # Use this for linearization of dynamics, etc.
 
-# Linerize about some trim point (x0,u0)
+# Linearize about some trim point (x0,u0)
 A, B = F16Model.Linearize(x0,u0);
 ```
 
