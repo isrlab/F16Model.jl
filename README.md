@@ -21,6 +21,8 @@ Pkg.add("https://github.com/isrlab/F16Model");
 ``` julia
 using F16Model
 
+# Define state vector
+# -------------------
 d2r = pi/180;
 npos = 0;
 epos = 0;
@@ -36,7 +38,15 @@ q = 0;
 r = 0;
 
 x0 = [npos,epos,alt,phi,theta,psi,Vt,alp,bet,p,q,r];
-u0 = [9000,0,0,0,0];
+
+# Define control vector
+# ---------------------
+T = 9000; # Thrust lbs
+dele = 0; # deg elevator angle
+dail = 0; # deg aileron angle
+drud = 0; # deg rudder angle
+dlef = 0; # deg leading edge flap angle
+u0 = [T,dele,dail,drud,dlef];
 
 # Evaluate xdot -- inplace implementation -- use this with DifferentialEquations package.
 xdot1 = zeros(12);
