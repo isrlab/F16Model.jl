@@ -5,7 +5,7 @@ This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynam
 This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem.umn.edu/~balas/darpa_sec/SEC.Software.html), and currently has the following features:
 
 1. Nonlinear dynamics for simulations.
-2. Lineariation about a trim point (x0,u0).
+2. Linearization about a trim point (x0,u0).
 
 More features will be added as we continue to develop this package.
 
