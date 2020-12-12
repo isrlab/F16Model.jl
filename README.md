@@ -10,7 +10,7 @@ This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem
 More features will be added as we continue to develop this package.
 
 ## Installation
-Add package using GitHub url e.g.
+Add package using GitHub url as shown below.
 
 ``` julia
 Pkg.add("https://github.com/isrlab/F16Model");
