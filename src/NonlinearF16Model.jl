@@ -469,7 +469,7 @@ function Trim(h,V,TrimType;phidot=0,thetadot=0,psidot=0)
     return g
   end
 
-# =================== IpOpt Specific Functions =====================
+# ---- IpOpt Specific Functions ----
   function eval_f(z) # Cost function
     return z[end];
   end
@@ -553,7 +553,7 @@ function Trim(h,V,TrimType;phidot=0,thetadot=0,psidot=0)
 
   prob.x = [x0[ii];u0;0]; # Initial guess.
   status = solveProblem(prob); 
-  xbar,ubar = getXU(prob.x);
+  xbar,ubar = getXU(prob.x[1:end-1]);
   return (xbar, ubar, status, prob.obj_val);
 end
 
