@@ -101,26 +101,28 @@ A, B = F16Model.Linearize(x0,u0);
 
 The aircraft model can be trimmed at the following configurations:
 
-1. **Steady-level Flight:** phi, phidot = 0, thetadot = 0, psidot = 0
+1. **Steady-level Flight:** phi = 0, phidot = 0, thetadot = 0, psidot = 0
 2. **Steady Turning Flight:** phidot = 0, thetadot = 0, psidot = given
 3. **Steady Pull Up:** phi = 0, phidot = 0, psidot = 0, thetadot = given
 4. **Steady Roll:** thetadot = 0, psidot = 0, phidot = given
 
-For all flight conditions: pdot,qdot,udot,Vdot,alphadot, and betadot are all zero. Derivatives of states N and E are ignored in the trim calculations.
+For all flight conditions: pdot, qdot, udot, Vtdot, alphadot, and betadot are all zero. Derivatives of states N and E are ignored in the trim calculations.
+
+The trim conditions are determined by solving a constrained nonlinear optimization problem.
+min (xdot-xdot_ref)*(xdot-xdot_ref) subject to state and control constraints. 
+
+The optimization returns the tuple (xbar, ubar, status, objVal). 
+If status == 0, the nonlinear optimization was succesful.
+If objVal is small then (xbar,ubar) are valid trim state and control values.
+
+For example:
 
 ```julia
-# Steady-level flight
+# Trim the aircrat
 
-# Provide initial guess for nonlinear optimization.
 h0 = 10000; # Trim at this altitude
-phi0, theta0,psi0 = 0,0,0;
-Vt0,alpha0,beta0 = 5000,0,0
-p,q,r = 0,0,0
-T0, dele0, dail0, drud0, dlef0 = 5000,0,0,0
+Vt0 = 500;  # Trim at this velocity
 
-x0 = [h0, phi0, theta0, psi0, Vt0, alpha0, beta0, p0, q0, r0];
-u0 = [T0,dele0,dail0,drud0,dlef0];
-
-ix = [1,1,1,1,0,0,0,1,1,1]; # 1 => Trim values are fixed in the optimization, 0 => Trim values are optimization variables.
-xbar,ubar = F16Model.Trim(x0,u0,ix); # Not implemented yet.
-```
+# Trim for steady level flight ay height h0 and velocity Vt0
+# ----------------------------------------------------------
+xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel); 

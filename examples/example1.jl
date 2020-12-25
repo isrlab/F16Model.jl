@@ -24,5 +24,11 @@ F16Model.Dynamics!(xdot1,x0,u0);
 # Evaluate xdot -- returns vector
 xdot2 = F16Model.Dynamics(x0,u0); # Use this for linearization of dynamics, etc.
 
+# Trim the aircraft for SteadyLevel at h0,V0
+h0 = 10000; # ft
+Vt0 = 500;   # ft/s
+xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel);
+
 # Linerize about some trim point (x0,u0)
-A, B = F16Model.Linearize(x0,u0);
+A, B = F16Model.Linearize(xbar,ubar);
+

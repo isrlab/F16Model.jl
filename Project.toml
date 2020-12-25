@@ -1,9 +1,10 @@
 name = "F16Model"
 uuid = "edccaa42-18b2-46d1-80ce-8508c2c4933c"
 authors = ["Intelligent Systems Research Laboratory <raktim@tamu.edu>"]
-version = "0.2.0"
+version = "1.0.0"
 
 [deps]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
-GridInterpolations = "bb4c363b-b914-514b-8517-4eb369bc008a"
 HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
+NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
