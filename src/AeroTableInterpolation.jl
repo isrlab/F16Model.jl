@@ -1,6 +1,6 @@
 using HDF5, Interpolations
+@show pathof(@F16Model)
 
-@show pathof(F16Model)
 fid = h5open("src/F16AeroData.h5", "r");
 
 function createAeroFunction(data,indepVars...)
