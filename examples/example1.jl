@@ -32,3 +32,4 @@ xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel);
 # Linerize about some trim point (x0,u0)
 A, B = F16Model.Linearize(xbar,ubar);
 
+
