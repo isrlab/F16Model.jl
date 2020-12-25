@@ -118,11 +118,10 @@ If objVal is small then (xbar,ubar) are valid trim state and control values.
 For example:
 
 ```julia
-# Trim the aircrat
+# Trim the aircraft
 
 h0 = 10000; # Trim at this altitude
 Vt0 = 500;  # Trim at this velocity
 
 # Trim for steady level flight ay height h0 and velocity Vt0
-# ----------------------------------------------------------
 xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel); 
