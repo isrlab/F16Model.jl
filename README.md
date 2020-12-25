@@ -1,15 +1,17 @@
 # F16Model
 
-This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynamics included in this model come from the NASA Technical Report 1538, *Simulator Study of Stall/Post-Stall Characteristics of a Fighter Airplane with Relaxed Longitudinal Static Stability*, by Nguyen, Ogburn, Gilbert, Kibler, Brown, and Deal, Dec 1979. The flight dynamics are based on *Aircraft Control and Simulations*, by Brian Stevens and Frank Lewis, Wiley Inter-Science, New York, 1992. 
+This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynamics included in this model come from the NASA Technical Report 1538, *Simulator Study of Stall/Post-Stall Characteristics of a Fighter Airplane with Relaxed Longitudinal Static Stability*, by Nguyen, Ogburn, Gilbert, Kibler, Brown, and Deal, Dec 1979. The flight dynamics are based on *Aircraft Control and Simulations*, by Brian Stevens and Frank Lewis, Wiley Inter-Science, New York, 1992.
 
 This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem.umn.edu/~balas/darpa_sec/SEC.Software.html), and currently has the following features:
 
 1. Nonlinear dynamics for simulations.
-2. Linearization about a trim point (x0,u0).
+1. Trim routing for steady-level flight. Other configurations coming soon.
+1. Linearization about a trim point (x0,u0).
 
 More features will be added as we continue to develop this package.
 
-## Model Details 
+## Model Details
+
 Detailed information is available [here](https://dept.aem.umn.edu/~balas/darpa_sec/software/F16Manual.pdf).
 
 The 12 states of the system are as follows:
@@ -29,7 +31,7 @@ The 12 states of the system are as follows:
 
 The 5 control variables are:
 
-1. T: Thrust in lbs, min: 1000, max: 19000 
+1. T: Thrust in lbs, min: 1000, max: 19000
 1. dele: Elevator angle in deg, min:-25, max: 25
 1. dail: Aileron angle in deg, min:-21.5, max: 21.5
 1. drud: Rudder angle in deg, min: -30, max: 30
@@ -37,17 +39,18 @@ The 5 control variables are:
 
 Actuator models are defined as:
 
-1. T: max |rate|: 10,000 lbs/s 
+1. T: max |rate|: 10,000 lbs/s
 1. dele: max |rate|: 60 deg/s
 1. dail: max |rate|: 80 deg/s
 1. drud: max |rate|: 120 deg/s
 1. dlef: max |rate|: 25 deg/s
 
-The nonlinear model of the aircraft does not include actuator dynamics. 
+The nonlinear model of the aircraft does not include actuator dynamics.
 The actuator dynamics need to be modeled as LTI systems and added to the system.
 For example, for dele the low pass filter 1/(s/60+1) would model the actuator dynamics.
 
 ## Installation
+
 Add package using GitHub url as shown below.
 
 ``` julia
@@ -109,9 +112,9 @@ The aircraft model can be trimmed at the following configurations:
 For all flight conditions: pdot, qdot, udot, Vtdot, alphadot, and betadot are all zero. Derivatives of states N and E are ignored in the trim calculations.
 
 The trim conditions are determined by solving a constrained nonlinear optimization problem.
-min (xdot-xdot_ref)*(xdot-xdot_ref) subject to state and control constraints. 
+min (xdot-xdot_ref)*(xdot-xdot_ref) subject to state and control constraints.
 
-The optimization returns the tuple (xbar, ubar, status, objVal). 
+The optimization returns the tuple (xbar, ubar, status, objVal).
 If status == 0, the nonlinear optimization was succesful.
 If objVal is small then (xbar,ubar) are valid trim state and control values.
 
@@ -125,3 +128,4 @@ Vt0 = 500;  # Trim at this velocity
 
 # Trim for steady level flight ay height h0 and velocity Vt0
 xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel);
+```
