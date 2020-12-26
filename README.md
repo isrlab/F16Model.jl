@@ -114,8 +114,8 @@ For all flight conditions: pdot, qdot, udot, Vtdot, alphadot, and betadot are al
 The trim conditions are determined by solving a constrained nonlinear optimization problem.
 min (xdot-xdot_ref)*(xdot-xdot_ref) subject to state and control constraints.
 
-The optimization returns the tuple (xbar, ubar, status, objVal).
-If status == 0, the nonlinear optimization was succesful.
+The trim function returns the tuple (xbar, ubar, status, objVal).
+If status == 0, the nonlinear optimization was successful.
 If objVal is small then (xbar,ubar) are valid trim state and control values.
 
 For example:
@@ -126,6 +126,6 @@ For example:
 h0 = 10000; # Trim at this altitude
 Vt0 = 500;  # Trim at this velocity
 
-# Trim for steady level flight ay height h0 and velocity Vt0
+# Trim for steady level flight at height h0 and velocity Vt0
 xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel);
 ```
