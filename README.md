@@ -112,7 +112,7 @@ The aircraft model can be trimmed at the following configurations:
 For all flight conditions: pdot, qdot, udot, Vtdot, alphadot, and betadot are all zero. Derivatives of states N and E are ignored in the trim calculations.
 
 The trim conditions are determined by solving a constrained nonlinear optimization problem.
-min (xdot-xdot_ref)*(xdot-xdot_ref) subject to state and control constraints.
+min (xdot-xdot_ref)'*(xdot-xdot_ref) subject to state and control constraints.
 
 The trim function returns the tuple (xbar, ubar, status, objVal).
 If status == 0, the nonlinear optimization was successful.
