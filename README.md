@@ -128,4 +128,6 @@ Vt0 = 500;  # Trim at this velocity
 
 # Trim for steady level flight at height h0 and velocity Vt0
 xbar, ubar, status, objVal = F16Model.Trim(h0,Vt0,:SteadyLevel);
+
+# Other examples coming soon.
 ```
