@@ -57,6 +57,6 @@ xbar, ubar, status, prob = F16Model.Trim(h0, Vt0, γ=0, ψdot=0, ϕ=(0,1), ψ=(0
 
 # Example 5: Linearization about a given trim (xbar,ubar)
 # -------------------------------------------------------
-A, B = F16Model.Linearize(xbar,ubar);
+A, B = F16Model.Linearize(xbar,ubar); # Linearization is done using ForwardDiff
 
 
