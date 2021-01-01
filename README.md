@@ -116,4 +116,4 @@ Vt0 = 500;   # ft/s
 xbar, ubar, status, prob = F16Model.Trim(h0,Vt0); # Default is steady-level
 ```
 
-See examples/example1.jl for more Trim(...) for other trim examples.
+See examples/example1.jl for other trim examples.
