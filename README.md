@@ -105,7 +105,7 @@ A, B = F16Model.Linearize(x0,u0);
 The aircraft model can be trimmed as shown in the following examples: 
 
 ```julia
-# Trim the aircraft for SteadyLevel at h0,V0
+# Trim the aircraft for steady-level flight at h0,V0
 # xbar = trim state
 # ubar = trim control
 # status = status of the optimization, status = 0 means optimization found solution and (xbar, ubar) defines a valid trim  point/
