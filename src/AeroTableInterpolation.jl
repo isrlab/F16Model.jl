@@ -1,6 +1,7 @@
 using HDF5, Interpolations
 
-fname = joinpath(dirname(pathof(F16Model)), "data/F16AeroData.h5");
+# fname = joinpath(dirname(pathof(F16Model)), "data/F16AeroData.h5");
+fname = "data/F16AeroData.h5";
 fid = h5open(fname, "r");
 
 function createAeroFunction(data,indepVars...)

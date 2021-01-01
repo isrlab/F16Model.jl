@@ -410,37 +410,21 @@ function Linearize(x0::Vector,u0::Vector)::Tuple{Matrix,Matrix}
   return (A,B)
 end
 
-#= Four standard trim routines
-1. SteadyLevel -- given (h,Vt), α, θ, and all control variables are free, all xdots are zero.
-2. SteadyPullUp -- given (h,Vt,θdot), ... 
-3. SteadyRoll -- given (h,Vt,ϕdot), ...
-4. SteadyTurning -- given (h,Vt,ψdot), ...
-=#
-function Trim(h,V,TrimType;phidot=0,thetadot=0,psidot=0)
+
+
+function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0), β = (0,0), p = (0,0), q = (0,0), r = (0,0));
+  # States in trim: h, ϕ, θ, ψ, Vt, α, β, p, q, r
   d2r = pi/180;
-  h0 = h;
-  Vt0 = V;
-  p0,q0,r0 = 0,0,0;
-  xdot_ref = zeros(10);
-
-  if TrimType == :SteadyLevel
-    phi0, theta0,psi0 = 0,0,0;
-    alpha0,beta0 = 0,0;
-    T0, dele0, dail0, drud0, dlef0 = 9000,0,0,0,0;
-    ix = [1, 1,0,1, 1,0,1, 1,1,1]; # 1 => Trim values are fixed in the optimization, 0 => Trim values are optimization variables.
-  elseif TrimType == :SteadyTurning
-    error(":SteadyTurning not implemented.")
-  elseif TrimType == :SteadyPullUp
-    error(":SteadyPullUp not implemented.")
-  elseif TrimType == :SteadyRoll
-    error(":SteadyRoll not implemented.")
-  else
-    error("Invalid trim type specified.")
-  end
-
-  x0 = [h0, phi0, theta0, psi0, Vt0, alpha0, beta0, p0, q0, r0];
+  
+  # Initial guesses
+  x0 = [h, ϕ[1], θ[1], ψ[1], V, α[1], β[1], p[1], q[1], r[1]];
+  
+  T0, dele0, dail0, drud0, dlef0 = 9000,0,0,0,0;
   u0 = [T0,dele0,dail0,drud0,dlef0];
-  ii = findall(x->x==0, ix);
+  
+  # Determine optimization variables
+  ix = [1, ϕ[2], θ[2], ψ[2], 1, α[2], β[2], p[2], q[2], r[2]]; # 1 => Trim values are fixed in the optimization, 0 => Trim values are optimization variables.
+  ii = findall(x->x==0, ix); 
 
   # Extract states and control from optimization variables
   function getXU(z)
@@ -461,12 +445,34 @@ function Trim(h,V,TrimType;phidot=0,thetadot=0,psidot=0)
 
   # Nonlinear constraints from dynamics and trim types
   function _nonlinear_constraints(z)
+    
     var = z[1:end-1];
     X,U = getXU(var);
-    xdot = Dynamics(X, U)[3:12];
-    e = xdot - xdot_ref;
-    g = e'*e - z[end];
-    return g
+  
+    ϕ = X[4]; θ = X[5]; #ψ = X[6];
+    α = X[8]; β = X[9];
+    g = 9.806;
+
+    a = cos(α)*cos(β);
+    b = sin(ϕ)*sin(β) + cos(ϕ)*sin(α)*cos(β);
+    G = ψdot*V/g;
+
+    # Zero acceleration constraints
+    C1 = Dynamics(X, U)[7:12]; # Only Vdot, αdot, βdot, pdot, qdot, and rdot
+
+    # Rate of climb constraint
+    v1 = a^2 - sin(γ)^2;
+    C2 = tan(θ) - (a*b + sin(γ)*sqrt(v1 + b^2))/v1;
+
+    # Coordinated turn constraint
+    C3 = G*cos(β)*(sin(α)*tan(θ) + cos(α)*cos(ϕ));
+
+    constr = [C1;C2;C3]; # Total 8 constraints
+    
+    # Weights
+    W = [0.1 1 1 1 1 1]; 
+    J = sum(constr.*constr) - z[end];
+    return J
   end
 
 # ---- IpOpt Specific Functions ----
@@ -554,6 +560,6 @@ function Trim(h,V,TrimType;phidot=0,thetadot=0,psidot=0)
   prob.x = [x0[ii];u0;0]; # Initial guess.
   status = solveProblem(prob); 
   xbar,ubar = getXU(prob.x[1:end-1]);
-  return (xbar, ubar, status, prob.obj_val);
+  return (xbar, ubar, status, prob);
 end
 
