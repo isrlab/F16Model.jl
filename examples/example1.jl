@@ -53,7 +53,7 @@ xbar, ubar, status, prob = F16Model.Trim(h0, Vt0, γ=5*pi/180, ψdot=0);
 # The nonlinear optimization uses initial_guess to warm start the iterations. 
 # If isFixed = 1, the optimization fixes the value of the state to initial_guess.
 # For example, for the most restricted steady-level flight, we can call Trim(...) as follows. 
-#Note α and θ are left as free, since they must satisfy γ = θ - α. With γ = 0, we get θ = α.
+# Note α and θ are left as free, since they must satisfy γ = θ - α. With γ = 0, we get θ = α.
 xbar, ubar, status, prob = F16Model.Trim(h0, Vt0, γ=0, ψdot=0, ϕ=(0,1), ψ=(0,1), β=(0,1), p=(0,1), q=(0,1), r=(0,1)); 
 
 # Example 5: Linearization about a given trim (xbar,ubar)
