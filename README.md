@@ -5,8 +5,8 @@ This is a Julia package for a nonlinear model of the F16 aircraft. The aerodynam
 This Julia package is inspired by the [MATLAB/Simulink package](https://dept.aem.umn.edu/~balas/darpa_sec/SEC.Software.html), and currently has the following features:
 
 1. Nonlinear dynamics for simulations.
-1. Trim routing for steady-level flight. Other configurations coming soon.
-1. Linearization about a trim point (x0,u0).
+1. Trim routine for various flight conditions.
+1. Linearization about a trim point (x0,u0) using ForwardDiff.
 
 More features will be added as we continue to develop this package.
 
@@ -54,7 +54,9 @@ For example, for dele the low pass filter 1/(s/60+1) would model the actuator dy
 Add package using GitHub url as shown below.
 
 ``` julia
-Pkg.add("https://github.com/isrlab/F16Model");
+Pkg.add(url="https://github.com/isrlab/F16Model");
+or
+Pkg.add("F16Model")
 ```
 
 ## Example
@@ -102,7 +104,7 @@ A, B = F16Model.Linearize(x0,u0);
 
 ## Trim Functions
 
-The aircraft model can be trimmed as shown in the following examples: 
+The aircraft model can be trimmed as shown in the following examples:
 
 ```julia
 # Trim the aircraft for steady-level flight at h0,V0
@@ -117,4 +119,3 @@ xbar, ubar, status, prob = F16Model.Trim(h0,Vt0); # Default is steady-level
 ```
 
 See examples/example1.jl for other trim examples.
-
