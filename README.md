@@ -54,10 +54,10 @@ For example, for dele the low pass filter 1/(s/60+1) would model the actuator dy
 Add package using GitHub url as shown below.
 
 ``` julia
-Pkg.add(url="https://github.com/isrlab/F16Model");
-or
+using Pkg # Pkg must be installed
 Pkg.add("F16Model")
 ```
+or in *julia>* prompt press *]* to get into the Pkg REPL and type *add F16Model*
 
 ## Example
 
