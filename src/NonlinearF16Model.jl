@@ -25,7 +25,7 @@ function atmos(alt::Real,vt::Real)::Tuple{Real,Real,Real}
 end
 
 function StateAndControlBounds()::Matrix
-  d2r = pi/180;  
+  d2r = pi/180;
   bounds = [5000       40000;  # h ft
             -90*d2r    90*d2r;     # phi rad
             -90*d2r    90*d2r;     # theta rad
@@ -44,49 +44,74 @@ function StateAndControlBounds()::Matrix
             ];
 
   return bounds;
-end            
+end
 
+
+function PrintStateAndControlBounds()
+  bounds = StateAndControlBounds();
+
+  stateNames = ("h","ϕ","θ","ψ","V","α","β","p","q","r");
+  stateUnits = ("ft","rad","rad","rad","ft/s","rad","rad","rad/s","rad/s","rad/s");
+
+  controlNames = ("T","δe","δa","δr","δlef");
+  controlUnits = ("lbs","deg","deg","deg","deg");
+
+  println("===== State Bounds =====")
+  println("-Inf ≦ Npos (ft) ≦ Inf");
+  println("-Inf ≦ Epos (ft) ≦ Inf");
+  for i in 1:10
+    str = " ≦ "*stateNames[i]*" ("*stateUnits[i]*") ≦ ";
+    println(bounds[i,1], str, bounds[i,2]);
+  end
+
+  println(" ");
+  println("===== Control Bounds =====")
+    for i in 1:5
+      str = " ≦ "*controlNames[i]*" ("*controlUnits[i]*") ≦ ";
+      println(bounds[i+10,1], str, bounds[i+10,2]);
+    end
+end
 
 # -------- Nonlinear Dynamic of F16 model ---------
 function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     # Define Constants for the Aircraft Model
-    g = 32.17;          # gravity, ft/s^2 
-    m = 636.94;         # mass, slugs 
-    B = 30.0;           # span, ft 
-    S = 300.0;          # planform area, ft^2 
-    cbar = 11.32;       # mean _ chord, ft 
-    xcgr = 0.35;        # reference center of gravity as a fraction of cbar 
-    xcg  = 0.30;        # center of gravity as a fraction of cbar. 
-    Heng = 0.0;         # turbine momentum along roll axis. 
+    g = 32.17;          # gravity, ft/s^2
+    m = 636.94;         # mass, slugs
+    B = 30.0;           # span, ft
+    S = 300.0;          # planform area, ft^2
+    cbar = 11.32;       # mean _ chord, ft
+    xcgr = 0.35;        # reference center of gravity as a fraction of cbar
+    xcg  = 0.30;        # center of gravity as a fraction of cbar.
+    Heng = 0.0;         # turbine momentum along roll axis.
 
     # NasaData -- translated via eq. 2.4-6 on pg 80 of Stevens and Lewis
-    Jy  = 55814.0;       # slug-ft^2  
-    Jxz = 982.0;         # slug-ft^2      
-    Jz  = 63100.0;       # slug-ft^2 
-    Jx  = 9496.0;        # slug-ft^2 
+    Jy  = 55814.0;       # slug-ft^2
+    Jxz = 982.0;         # slug-ft^2
+    Jz  = 63100.0;       # slug-ft^2
+    Jx  = 9496.0;        # slug-ft^2
     r2d = 180.0/pi;
 
     # Collect the states and control variables
     npos  = x[1];
     epos  = x[2];
-    alt   = x[3];   # altitude 
-    phi   = x[4];   # Euler angles are in rad. 
+    alt   = x[3];   # altitude
+    phi   = x[4];   # Euler angles are in rad.
     theta = x[5];
     psi   = x[6];
-  
-    vvt   = x[7];     # total velocity 
-    alpha = x[8]*r2d; # angle of attack in degrees 
-    beta  = x[9]*r2d; # sideslip angle in degrees 
-    P     = x[10];    # Roll Rate --- rolling  moment is Lbar 
-    Q     = x[11];    # Pitch Rate--- pitching moment is M 
-    R     = x[12];    # Yaw Rate  --- yawing   moment is N 
-  
-    sa    = sin(x[8]); # sin(alpha) 
-    ca    = cos(x[8]); # cos(alpha) 
-    sb    = sin(x[9]); # sin(beta)  
-    cb    = cos(x[9]); # cos(beta)  
-    tb    = tan(x[9]); # tan(beta)  
-  
+
+    vvt   = x[7];     # total velocity
+    alpha = x[8]*r2d; # angle of attack in degrees
+    beta  = x[9]*r2d; # sideslip angle in degrees
+    P     = x[10];    # Roll Rate --- rolling  moment is Lbar
+    Q     = x[11];    # Pitch Rate--- pitching moment is M
+    R     = x[12];    # Yaw Rate  --- yawing   moment is N
+
+    sa    = sin(x[8]); # sin(alpha)
+    ca    = cos(x[8]); # cos(alpha)
+    sb    = sin(x[9]); # sin(beta)
+    cb    = cos(x[9]); # cos(beta)
+    tb    = tan(x[9]); # tan(beta)
+
     st    = sin(theta);
     ct    = cos(theta);
     tt    = tan(theta);
@@ -96,10 +121,10 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     cpsi  = cos(psi);
 
     # Control variables
-    T     = u[1];   # Thrust 
-    el    = u[2];   # Elevator setting in degrees 
-    ail   = u[3];   # Ailerons mex setting in degrees 
-    rud   = u[4];   # Rudder setting in degrees 
+    T     = u[1];   # Thrust
+    el    = u[2];   # Elevator setting in degrees
+    ail   = u[3];   # Ailerons mex setting in degrees
+    rud   = u[4];   # Rudder setting in degrees
     lef   = u[5];   # Leading edge flap setting in degrees
 
     # Normalization and scaling
@@ -111,7 +136,7 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
 
     dail  = ail/21.5; # Aileron angle normalized against max deflection
     drud  = rud/30.0;  # Rudder normalized against max angle
-    dlef  = (1 - lef/25.0);  # Leading edge flap normalized against max angle 
+    dlef  = (1 - lef/25.0);  # Leading edge flap normalized against max angle
 
     # Atmospheric effects
     mach, qbar, ps = atmos(alt,vt);
@@ -131,14 +156,14 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     psid = (Q*sphi + R*cphi)/ct; # psi dot
 
     # Aerodynamic forces and moments
-    Cx = _Cx(alpha,beta,el); 
-    Cy = _Cy(alpha,beta);  
-    Cz = _Cz(alpha,beta,el);  
-    Cm = _Cm(alpha,beta,el);   
+    Cx = _Cx(alpha,beta,el);
+    Cy = _Cy(alpha,beta);
+    Cz = _Cz(alpha,beta,el);
+    Cm = _Cm(alpha,beta,el);
     Cn = _Cn(alpha,beta,el);
     Cl = _Cl(alpha,beta,el);
 
-    delta_Cx_lef, delta_Cy_lef, delta_Cz_lef,delta_Cm_lef, delta_Cn_lef, delta_Cl_lef  = Delta_lef(alpha,beta); 
+    delta_Cx_lef, delta_Cy_lef, delta_Cz_lef,delta_Cm_lef, delta_Cn_lef, delta_Cl_lef  = Delta_lef(alpha,beta);
 
     # Aerodynamic Damping
     Cxq, Cyr, Cyp, Czq, Clr, Clp, Cmq, Cnr, Cnp  = _Damping(alpha);
@@ -156,7 +181,7 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
 
     # ========= Dynamics -- Euler's first and second law ==============
 
-    # Compute total Cx 
+    # Compute total Cx
     dXdQ = (cbar/(2*vt))*(Cxq + delta_Cxq_lef*dlef);
     Cx_tot = Cx + delta_Cx_lef*dlef + dXdQ*Q;
 
@@ -165,53 +190,53 @@ function Dynamics!(xdot::Vector, x::Vector, u::Vector)
     Cz_tot = Cz + delta_Cz_lef*dlef + dZdQ*Q;
 
     # Compute total Cm
-    dMdQ = (cbar/(2*vt))*(Cmq + delta_Cmq_lef*dlef);    
+    dMdQ = (cbar/(2*vt))*(Cmq + delta_Cmq_lef*dlef);
     Cm_tot = Cm*eta_el + Cz_tot*(xcgr-xcg) + delta_Cm_lef*dlef + dMdQ*Q + delta_Cm + delta_Cm_ds;
-    
+
     # Compute total Cy
     dYdail = delta_Cy_a20 + delta_Cy_a20_lef*dlef;
     dYdR = (B/(2*vt))*(Cyr + delta_Cyr_lef*dlef);
     dYdP = (B/(2*vt))*(Cyp + delta_Cyp_lef*dlef);
     Cy_tot = Cy + delta_Cy_lef*dlef + dYdail*dail + delta_Cy_r30*drud + dYdR*R + dYdP*P;
-    
+
     # Compute total Cn
     dNdail = delta_Cn_a20 + delta_Cn_a20_lef*dlef;
     dNdR = (B/(2*vt))*(Cnr + delta_Cnr_lef*dlef);
     dNdP = (B/(2*vt))*(Cnp + delta_Cnp_lef*dlef);
     Cn_tot = Cn + delta_Cn_lef*dlef - Cy_tot*(xcgr-xcg)*(cbar/B) + dNdail*dail + delta_Cn_r30*drud + dNdR*R + dNdP*P + delta_Cnbeta*beta;
-    
-    # Compute total Cl    
+
+    # Compute total Cl
     dLdail = delta_Cl_a20 + delta_Cl_a20_lef*dlef;
     dLdR = (B/(2*vt))*(Clr + delta_Clr_lef*dlef);
     dLdP = (B/(2*vt))*(Clp + delta_Clp_lef*dlef);
     Cl_tot = Cl + delta_Cl_lef*dlef + dLdail*dail + delta_Cl_r30*drud + dLdR*R + dLdP*P + delta_Clbeta*beta;
-    
+
     # Compute Udot,Vdot, Wdot,(as on NASA report p36)
     Udot = R*V - Q*W - g*st + qbar*S*Cx_tot/m + T/m;
     Vdot = P*W - R*U + g*ct*sphi + qbar*S*Cy_tot/m;
     Wdot = Q*U - P*V + g*ct*cphi + qbar*S*Cz_tot/m;
-    
-    # vt_dot equation 
+
+    # vt_dot equation
     vd = (U*Udot + V*Vdot + W*Wdot)/vt;
-    
+
     # alpha_dot equation
     αd = (U*Wdot - W*Udot)/(U*U + W*W);
-    
+
     # beta_dot equation
     βd = (Vdot*vt - V*vd)/(vt*vt*cb);
-    
-    # Equations for Pdot, Qdot, and Rdot 
+
+    # Equations for Pdot, Qdot, and Rdot
     L_tot = Cl_tot*qbar*S*B;       # Get moments from coefficients
     M_tot = Cm_tot*qbar*S*cbar;
     N_tot = Cn_tot*qbar*S*B;
     denom = Jx*Jz - Jxz*Jxz;
-    
+
     # Pdot
     pd =  (Jz*L_tot + Jxz*N_tot - (Jz*(Jz-Jy)+Jxz*Jxz)*Q*R + Jxz*(Jx-Jy+Jz)*P*Q + Jxz*Q*Heng)/denom;
-    
+
     # Qdot
     qd = (M_tot + (Jz-Jx)*P*R - Jxz*(P*P-R*R) - R*Heng)/Jy;
-    
+
     # Rdot
     rd = (Jx*N_tot + Jxz*L_tot + (Jx*(Jx-Jy)+Jxz*Jxz)*P*Q - Jxz*(Jx-Jy+Jz)*Q*R +  Jx*Q*Heng)/denom;
 
@@ -232,42 +257,42 @@ end
 # Redefine the function for gradient calculation.
 function Dynamics(x::Vector, u::Vector)::Vector
   # Define Constants for the Aircraft Model
-  g = 32.17;          # gravity, ft/s^2 
-  m = 636.94;         # mass, slugs 
-  B = 30.0;           # span, ft 
-  S = 300.0;          # planform area, ft^2 
-  cbar = 11.32;       # mean _ chord, ft 
-  xcgr = 0.35;        # reference center of gravity as a fraction of cbar 
-  xcg  = 0.30;        # center of gravity as a fraction of cbar. 
-  Heng = 0.0;         # turbine momentum along roll axis. 
+  g = 32.17;          # gravity, ft/s^2
+  m = 636.94;         # mass, slugs
+  B = 30.0;           # span, ft
+  S = 300.0;          # planform area, ft^2
+  cbar = 11.32;       # mean _ chord, ft
+  xcgr = 0.35;        # reference center of gravity as a fraction of cbar
+  xcg  = 0.30;        # center of gravity as a fraction of cbar.
+  Heng = 0.0;         # turbine momentum along roll axis.
 
   # NasaData -- translated via eq. 2.4-6 on pg 80 of Stevens and Lewis
-  Jy  = 55814.0;       # slug-ft^2  
-  Jxz = 982.0;         # slug-ft^2      
-  Jz  = 63100.0;       # slug-ft^2 
-  Jx  = 9496.0;        # slug-ft^2 
+  Jy  = 55814.0;       # slug-ft^2
+  Jxz = 982.0;         # slug-ft^2
+  Jz  = 63100.0;       # slug-ft^2
+  Jx  = 9496.0;        # slug-ft^2
   r2d = 180.0/pi;
 
   # Collect the states and control variables
   npos  = x[1];
   epos  = x[2];
-  alt   = x[3];    # altitude 
-  phi   = x[4];   # Euler angles are in rad. 
+  alt   = x[3];    # altitude
+  phi   = x[4];   # Euler angles are in rad.
   theta = x[5];
   psi   = x[6];
 
-  vvt   = x[7];     # total velocity 
+  vvt   = x[7];     # total velocity
   alpha = x[8]*r2d; # angle of attack in degrees for _ tables
   beta  = x[9]*r2d; # sideslip angle in degrees for _ tables
-  P     = x[10];    # Roll Rate --- rolling  moment is Lbar 
-  Q     = x[11];    # Pitch Rate--- pitching moment is M 
-  R     = x[12];    # Yaw Rate  --- yawing   moment is N 
+  P     = x[10];    # Roll Rate --- rolling  moment is Lbar
+  Q     = x[11];    # Pitch Rate--- pitching moment is M
+  R     = x[12];    # Yaw Rate  --- yawing   moment is N
 
-  sa    = sin(x[8]); # sin(alpha) 
-  ca    = cos(x[8]); # cos(alpha) 
-  sb    = sin(x[9]); # sin(beta)  
-  cb    = cos(x[9]); # cos(beta)  
-  tb    = tan(x[9]); # tan(beta)  
+  sa    = sin(x[8]); # sin(alpha)
+  ca    = cos(x[8]); # cos(alpha)
+  sb    = sin(x[9]); # sin(beta)
+  cb    = cos(x[9]); # cos(beta)
+  tb    = tan(x[9]); # tan(beta)
 
   st    = sin(theta);
   ct    = cos(theta);
@@ -278,10 +303,10 @@ function Dynamics(x::Vector, u::Vector)::Vector
   cpsi  = cos(psi);
 
   # Control variables
-  T     = u[1];   # Thrust 
-  el    = u[2];   # Elevator setting in degrees 
-  ail   = u[3];   # Ailerons mex setting in degrees 
-  rud   = u[4];   # Rudder setting in degrees 
+  T     = u[1];   # Thrust
+  el    = u[2];   # Elevator setting in degrees
+  ail   = u[3];   # Ailerons mex setting in degrees
+  rud   = u[4];   # Rudder setting in degrees
   lef   = u[5];   # Leading edge flap setting in degrees
 
   # Normalization and scaling
@@ -293,7 +318,7 @@ function Dynamics(x::Vector, u::Vector)::Vector
 
   dail  = ail/21.5; # Aileron angle normalized against max deflection
   drud  = rud/30.0;  # Rudder normalized against max angle
-  dlef  = (1 - lef/25.0);  # Leading edge flap normalized against max angle 
+  dlef  = (1 - lef/25.0);  # Leading edge flap normalized against max angle
 
   # Atmospheric effects
   mach, qbar, ps = atmos(alt,vt);
@@ -313,14 +338,14 @@ function Dynamics(x::Vector, u::Vector)::Vector
   psid = (Q*sphi + R*cphi)/ct; # psi dot
 
   # Aerodynamic forces and moments
-  Cx = _Cx(alpha,beta,el); 
-  Cy = _Cy(alpha,beta);  
-  Cz = _Cz(alpha,beta,el);  
-  Cm = _Cm(alpha,beta,el);   
+  Cx = _Cx(alpha,beta,el);
+  Cy = _Cy(alpha,beta);
+  Cz = _Cz(alpha,beta,el);
+  Cm = _Cm(alpha,beta,el);
   Cn = _Cn(alpha,beta,el);
   Cl = _Cl(alpha,beta,el);
 
-  delta_Cx_lef, delta_Cy_lef, delta_Cz_lef,delta_Cm_lef, delta_Cn_lef, delta_Cl_lef  = Delta_lef(alpha,beta); 
+  delta_Cx_lef, delta_Cy_lef, delta_Cz_lef,delta_Cm_lef, delta_Cn_lef, delta_Cl_lef  = Delta_lef(alpha,beta);
 
   # Aerodynamic Damping
   Cxq, Cyr, Cyp, Czq, Clr, Clp, Cmq, Cnr, Cnp  = _Damping(alpha);
@@ -338,7 +363,7 @@ function Dynamics(x::Vector, u::Vector)::Vector
 
   # ========= Dynamics -- Euler's first and second law ==============
 
-  # Compute total Cx 
+  # Compute total Cx
   dXdQ = (cbar/(2*vt))*(Cxq + delta_Cxq_lef*dlef);
   Cx_tot = Cx + delta_Cx_lef*dlef + dXdQ*Q;
 
@@ -347,53 +372,53 @@ function Dynamics(x::Vector, u::Vector)::Vector
   Cz_tot = Cz + delta_Cz_lef*dlef + dZdQ*Q;
 
   # Compute total Cm
-  dMdQ = (cbar/(2*vt))*(Cmq + delta_Cmq_lef*dlef);    
+  dMdQ = (cbar/(2*vt))*(Cmq + delta_Cmq_lef*dlef);
   Cm_tot = Cm*eta_el + Cz_tot*(xcgr-xcg) + delta_Cm_lef*dlef + dMdQ*Q + delta_Cm + delta_Cm_ds;
-  
+
   # Compute total Cy
   dYdail = delta_Cy_a20 + delta_Cy_a20_lef*dlef;
   dYdR = (B/(2*vt))*(Cyr + delta_Cyr_lef*dlef);
   dYdP = (B/(2*vt))*(Cyp + delta_Cyp_lef*dlef);
   Cy_tot = Cy + delta_Cy_lef*dlef + dYdail*dail + delta_Cy_r30*drud + dYdR*R + dYdP*P;
-  
+
   # Compute total Cn
   dNdail = delta_Cn_a20 + delta_Cn_a20_lef*dlef;
   dNdR = (B/(2*vt))*(Cnr + delta_Cnr_lef*dlef);
   dNdP = (B/(2*vt))*(Cnp + delta_Cnp_lef*dlef);
   Cn_tot = Cn + delta_Cn_lef*dlef - Cy_tot*(xcgr-xcg)*(cbar/B) + dNdail*dail + delta_Cn_r30*drud + dNdR*R + dNdP*P + delta_Cnbeta*beta;
-  
-  # Compute total Cl    
+
+  # Compute total Cl
   dLdail = delta_Cl_a20 + delta_Cl_a20_lef*dlef;
   dLdR = (B/(2*vt))*(Clr + delta_Clr_lef*dlef);
   dLdP = (B/(2*vt))*(Clp + delta_Clp_lef*dlef);
   Cl_tot = Cl + delta_Cl_lef*dlef + dLdail*dail + delta_Cl_r30*drud + dLdR*R + dLdP*P + delta_Clbeta*beta;
-  
+
   # Compute Udot,Vdot, Wdot,(as on NASA report p36)
   Udot = R*V - Q*W - g*st + qbar*S*Cx_tot/m + T/m;
   Vdot = P*W - R*U + g*ct*sphi + qbar*S*Cy_tot/m;
   Wdot = Q*U - P*V + g*ct*cphi + qbar*S*Cz_tot/m;
-  
-  # vt_dot equation 
+
+  # vt_dot equation
   vd = (U*Udot + V*Vdot + W*Wdot)/vt;
-  
+
   # alpha_dot equation
   αd = (U*Wdot - W*Udot)/(U*U + W*W);
-  
+
   # beta_dot equation
   βd = (Vdot*vt - V*vd)/(vt*vt*cb);
-  
-  # Equations for Pdot, Qdot, and Rdot 
+
+  # Equations for Pdot, Qdot, and Rdot
   L_tot = Cl_tot*qbar*S*B;       # Get moments from coefficients
   M_tot = Cm_tot*qbar*S*cbar;
   N_tot = Cn_tot*qbar*S*B;
   denom = Jx*Jz - Jxz*Jxz;
-  
+
   # Pdot
   pd =  (Jz*L_tot + Jxz*N_tot - (Jz*(Jz-Jy)+Jxz*Jxz)*Q*R + Jxz*(Jx-Jy+Jz)*P*Q + Jxz*Q*Heng)/denom;
-  
+
   # Qdot
   qd = (M_tot + (Jz-Jx)*P*R - Jxz*(P*P-R*R) - R*Heng)/Jy;
-  
+
   # Rdot
   rd = (Jx*N_tot + Jxz*L_tot + (Jx*(Jx-Jy)+Jxz*Jxz)*P*Q - Jxz*(Jx-Jy+Jz)*Q*R +  Jx*Q*Heng)/denom;
 
@@ -415,16 +440,16 @@ end
 function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0), β = (0,0), p = (0,0), q = (0,0), r = (0,0));
   # States in trim: h, ϕ, θ, ψ, Vt, α, β, p, q, r
   d2r = pi/180;
-  
+
   # Initial guesses
   x0 = [h, ϕ[1], θ[1], ψ[1], V, α[1], β[1], p[1], q[1], r[1]];
-  
+
   T0, dele0, dail0, drud0, dlef0 = 9000,0,0,0,0;
   u0 = [T0,dele0,dail0,drud0,dlef0];
-  
+
   # Determine optimization variables
   ix = [1, ϕ[2], θ[2], ψ[2], 1, α[2], β[2], p[2], q[2], r[2]]; # 1 => Trim values are fixed in the optimization, 0 => Trim values are optimization variables.
-  ii = findall(x->x==0, ix); 
+  ii = findall(x->x==0, ix);
 
   # Extract states and control from optimization variables
   function getXU(z)
@@ -445,10 +470,10 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
 
   # Nonlinear constraints from dynamics and trim types
   function _nonlinear_constraints(z)
-    
+
     var = z[1:end-1];
     X,U = getXU(var);
-  
+
     ϕ = X[4]; θ = X[5]; #ψ = X[6];
     α = X[8]; β = X[9];
     g = 9.806;
@@ -468,9 +493,9 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
     C3 = G*cos(β)*(sin(α)*tan(θ) + cos(α)*cos(ϕ));
 
     constr = [C1;C2;C3]; # Total 8 constraints
-    
+
     # Weights
-    W = [0.1 1 1 1 1 1]; 
+    W = [0.1 1 1 1 1 1];
     J = sum(constr.*constr) - z[end];
     return J
   end
@@ -479,20 +504,20 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
   function eval_f(z) # Cost function
     return z[end];
   end
-  
+
   function eval_g(z, g) # Nonlinear inequality constraint
     # Bad: g    = zeros(2)  # Allocates new array
     # OK:  g[:] = zeros(2)  # Modifies 'in place'
     g[:] .= _nonlinear_constraints(z);
   end
-  
+
   function eval_grad_f(z, gradf) # Gradient of cost function.
     # Bad: grad_f    = zeros(4)  # Allocates new array
     # OK:  grad_f[:] = zeros(4)  # Modifies 'in place'
     f = x-> ForwardDiff.gradient(eval_f,x);
     gradf[:] = f(z);
   end
-  
+
   function eval_jac_g(z, mode, rows, cols, values) # Jacobian of nonlinear inequality constraint.
     nvar = length(z);
     ng = 1;
@@ -501,7 +526,7 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
         index = 1;
         for i=1:ng
             for j=1:nvar
-                rows[index] = i; 
+                rows[index] = i;
                 cols[index] = j;
                 index += 1;
             end
@@ -511,7 +536,7 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
         values[:] = M(z);
     end
   end
-  
+
   function eval_h(z, mode, rows, cols, obj_factor, lambda, values) # Hessian of cost.
     nvar = length(z);
     if mode == :Structure
@@ -553,13 +578,12 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
   g_L = [-Inf];
   g_U = [0.0];
 
-  nele_jac  = m*n; 
+  nele_jac  = m*n;
   nele_hess = Integer(n*(n+1)/2);
   prob = createProblem(n, x_L, x_U, m, g_L, g_U, nele_jac, nele_hess, eval_f, eval_g, eval_grad_f, eval_jac_g, eval_h);
 
   prob.x = [x0[ii];u0;0]; # Initial guess.
-  status = solveProblem(prob); 
+  status = solveProblem(prob);
   xbar,ubar = getXU(prob.x[1:end-1]);
   return (xbar, ubar, status, prob);
 end
-
