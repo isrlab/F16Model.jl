@@ -126,4 +126,5 @@ See examples/example1.jl for other trim examples.
 ## Control Design and Nonlinear Simulations
 
 Please see "F16 Flight Control Example.ipynb" notebook under examples/
+
 If the plots do not show up in the website, please download the notbook and run it. The plots should show up.
