@@ -122,3 +122,7 @@ xbar, ubar, status, prob = F16Model.Trim(h0,Vt0); # Default is steady-level
 ```
 
 See examples/example1.jl for other trim examples.
+
+## Control Design and Nonlinear Simulations
+
+Please see "F16 Flight Control Example.ipynb" notebook under examples/
