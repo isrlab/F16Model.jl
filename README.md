@@ -127,4 +127,4 @@ See examples/example1.jl for other trim examples.
 
 Please see "F16 Flight Control Example.ipynb" notebook under examples/
 
-If the plots do not show up in the website, please download the notebook and run it. The plots should show up.
+If the plots do not show up in the GitHub website, please download the notebook and run it. The plots should show up.
