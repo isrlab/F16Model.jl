@@ -142,9 +142,9 @@ uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[deps.Interpolations]]
 deps = ["Adapt", "AxisAlgorithms", "ChainRulesCore", "LinearAlgebra", "OffsetArrays", "Random", "Ratios", "Requires", "SharedArrays", "SparseArrays", "StaticArrays", "WoodburyMatrices"]
-git-tree-sha1 = "30c2390fdb76f6788540b83155bb63802de1814e"
+git-tree-sha1 = "a82caeb68217255e488ba9b9fbd71ddabc4e63c0"
 uuid = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
-version = "0.14.1"
+version = "0.14.2"
 
 [[deps.InverseFunctions]]
 deps = ["Test"]

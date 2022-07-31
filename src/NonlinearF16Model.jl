@@ -436,7 +436,6 @@ function Linearize(x0::Vector,u0::Vector)::Tuple{Matrix,Matrix}
 end
 
 
-
 function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0), β = (0,0), p = (0,0), q = (0,0), r = (0,0));
   # States in trim: h, ϕ, θ, ψ, Vt, α, β, p, q, r
   d2r = pi/180;
@@ -518,11 +517,11 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
     gradf[:] = f(z);
   end
 
-  function eval_jac_g(z, mode, rows, cols, values) # Jacobian of nonlinear inequality constraint.
+  function eval_jac_g(z, rows, cols, values) # Jacobian of nonlinear inequality constraint.
     nvar = length(z);
     ng = 1;
 
-    if mode == :Structure
+    if values === nothing
         index = 1;
         for i=1:ng
             for j=1:nvar
@@ -537,9 +536,9 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
     end
   end
 
-  function eval_h(z, mode, rows, cols, obj_factor, lambda, values) # Hessian of cost.
+  function eval_h(z, rows, cols, obj_factor, lambda, values) # Hessian of cost.
     nvar = length(z);
-    if mode == :Structure
+    if values === nothing
       # Symmetric matrix, fill the lower left triangle only
       idx = 1
       for row = 1:nvar
@@ -580,10 +579,10 @@ function Trim(h, V; γ=0, ψdot=0, ϕ = (0,0), θ = (0,0), ψ = (0,0), α = (0,0
 
   nele_jac  = m*n;
   nele_hess = Integer(n*(n+1)/2);
-  prob = createProblem(n, x_L, x_U, m, g_L, g_U, nele_jac, nele_hess, eval_f, eval_g, eval_grad_f, eval_jac_g, eval_h);
+  prob = Ipopt.CreateIpoptProblem(n, x_L, x_U, m, g_L, g_U, nele_jac, nele_hess, eval_f, eval_g, eval_grad_f, eval_jac_g, eval_h);
 
   prob.x = [x0[ii];u0;0]; # Initial guess.
-  status = solveProblem(prob);
+  status = Ipopt.IpoptSolve(prob);
   xbar,ubar = getXU(prob.x[1:end-1]);
   return (xbar, ubar, status, prob);
 end
