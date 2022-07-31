@@ -1,5 +1,4 @@
 # Nonlinear Model of F16 Aircraft with NASA _table
-using ForwardDiff, Ipopt
 include("AeroTableInterpolation.jl")
 
 # -------- Atmosphere Model ---------
